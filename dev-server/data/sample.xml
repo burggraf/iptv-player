@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv source-info-name="Mock EPG" generator-info-name="dev-server">
+  <channel id="BBC1.uk">
+    <display-name lang="en">BBC One</display-name>
+    <icon src="http://localhost:8080/logos/bbc1.png"/>
+  </channel>
+  <channel id="BBC2.uk">
+    <display-name lang="en">BBC Two</display-name>
+    <icon src="http://localhost:8080/logos/bbc2.png"/>
+  </channel>
+  <channel id="ITV1.uk">
+    <display-name lang="en">ITV</display-name>
+    <icon src="http://localhost:8080/logos/itv.png"/>
+  </channel>
+  <channel id="CH4.uk">
+    <display-name lang="en">Channel 4</display-name>
+    <icon src="http://localhost:8080/logos/ch4.png"/>
+  </channel>
+  <channel id="SKYNEWS.uk">
+    <display-name lang="en">Sky News</display-name>
+    <icon src="http://localhost:8080/logos/skynews.png"/>
+  </channel>
+  <channel id="CNN.us">
+    <display-name lang="en">CNN</display-name>
+    <icon src="http://localhost:8080/logos/cnn.png"/>
+  </channel>
+  <channel id="SKYSPORTS.uk">
+    <display-name lang="en">Sky Sports Main Event</display-name>
+    <icon src="http://localhost:8080/logos/skysports.png"/>
+  </channel>
+  <channel id="ESPN.us">
+    <display-name lang="en">ESPN</display-name>
+    <icon src="http://localhost:8080/logos/espn.png"/>
+  </channel>
+</tv>

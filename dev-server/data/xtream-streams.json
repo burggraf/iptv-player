@@ -1,0 +1,10 @@
+[
+  {"stream_id": 101, "name": "BBC One HD", "stream_type": "live", "category_id": "1", "stream_icon": "http://localhost:8080/logos/bbc1.png", "epg_channel_id": "BBC1.uk", "tv_archive": 0, "direct_source": "http://test-streams.mux.dev/x30x/variant.m3u8"},
+  {"stream_id": 102, "name": "BBC Two HD", "stream_type": "live", "category_id": "1", "stream_icon": "http://localhost:8080/logos/bbc2.png", "epg_channel_id": "BBC2.uk", "tv_archive": 0, "direct_source": "http://test-streams.mux.dev/x30x/variant.m3u8"},
+  {"stream_id": 103, "name": "ITV HD", "stream_type": "live", "category_id": "1", "stream_icon": "http://localhost:8080/logos/itv.png", "epg_channel_id": "ITV1.uk", "tv_archive": 0, "direct_source": "https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8"},
+  {"stream_id": 104, "name": "Channel 4 HD", "stream_type": "live", "category_id": "1", "stream_icon": "http://localhost:8080/logos/ch4.png", "epg_channel_id": "CH4.uk", "tv_archive": 0, "direct_source": "https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8"},
+  {"stream_id": 201, "name": "Sky Sports Main Event HD", "stream_type": "live", "category_id": "2", "stream_icon": "http://localhost:8080/logos/skysports.png", "epg_channel_id": "SKYSPORTS.uk", "tv_archive": 0, "direct_source": "http://test-streams.mux.dev/x30x/variant.m3u8"},
+  {"stream_id": 202, "name": "ESPN HD", "stream_type": "live", "category_id": "2", "stream_icon": "http://localhost:8080/logos/espn.png", "epg_channel_id": "ESPN.us", "tv_archive": 0, "direct_source": "https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8"},
+  {"stream_id": 301, "name": "Sky News", "stream_type": "live", "category_id": "3", "stream_icon": "http://localhost:8080/logos/skynews.png", "epg_channel_id": "SKYNEWS.uk", "tv_archive": 0, "direct_source": "http://test-streams.mux.dev/x30x/variant.m3u8"},
+  {"stream_id": 302, "name": "CNN International", "stream_type": "live", "category_id": "3", "stream_icon": "http://localhost:8080/logos/cnn.png", "epg_channel_id": "CNN.us", "tv_archive": 0, "direct_source": "https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8"}
+]

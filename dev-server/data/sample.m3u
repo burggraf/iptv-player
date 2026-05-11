@@ -1,0 +1,17 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="BBC1.uk" tvg-chno="1" tvg-name="BBC One" tvg-logo="http://localhost:8080/logos/bbc1.png" group-title="Entertainment",BBC One HD
+http://test-streams.mux.dev/x30x/variant.m3u8
+#EXTINF:-1 tvg-id="BBC2.uk" tvg-chno="2" tvg-name="BBC Two" tvg-logo="http://localhost:8080/logos/bbc2.png" group-title="Entertainment",BBC Two HD
+http://test-streams.mux.dev/x30x/variant.m3u8
+#EXTINF:-1 tvg-id="ITV1.uk" tvg-chno="3" tvg-name="ITV" tvg-logo="http://localhost:8080/logos/itv.png" group-title="Entertainment",ITV HD
+https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8
+#EXTINF:-1 tvg-id="CH4.uk" tvg-chno="4" tvg-name="Channel 4" tvg-logo="http://localhost:8080/logos/ch4.png" group-title="Entertainment",Channel 4 HD
+https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8
+#EXTINF:-1 tvg-id="SKYNEWS.uk" tvg-chno="501" tvg-name="Sky News" tvg-logo="http://localhost:8080/logos/skynews.png" group-title="News",Sky News
+http://test-streams.mux.dev/x30x/variant.m3u8
+#EXTINF:-1 tvg-id="CNN.us" tvg-chno="502" tvg-name="CNN" tvg-logo="http://localhost:8080/logos/cnn.png" group-title="News",CNN International
+https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8
+#EXTINF:-1 tvg-id="SKYSPORTS.uk" tvg-chno="601" tvg-name="Sky Sports Main Event" tvg-logo="http://localhost:8080/logos/skysports.png" group-title="Sports",Sky Sports Main Event HD
+http://test-streams.mux.dev/x30x/variant.m3u8
+#EXTINF:-1 tvg-id="ESPN.us" tvg-chno="602" tvg-name="ESPN" tvg-logo="http://localhost:8080/logos/espn.png" group-title="Sports",ESPN HD
+https://devstreaming-cdn.apple.com/sample-code/streams/master.m3u8
