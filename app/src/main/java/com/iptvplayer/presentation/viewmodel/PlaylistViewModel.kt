@@ -2,7 +2,7 @@ package com.iptvplayer.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iptvplayer.core.Result
+import com.iptvplayer.core.AppResult
 import com.iptvplayer.domain.model.Playlist
 import com.iptvplayer.domain.model.PlaylistType
 import com.iptvplayer.domain.usecase.LoadPlaylistUseCase
@@ -46,17 +46,17 @@ class PlaylistViewModel(
             )
 
             when (val result = loadPlaylistUseCase(playlist)) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     // TODO: refresh playlists list from repository
                     _uiState.value = _uiState.value.copy(isLoading = false)
                 }
-                is Result.Error -> {
+                is AppResult.Error -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = result.exception.message
                     )
                 }
-                is Result.Loading -> {}
+                is AppResult.Loading -> {}
             }
         }
     }

@@ -1,13 +1,13 @@
 package com.iptvplayer.data.repository
 
 import com.iptvplayer.core.DispatcherProvider
-import com.iptvplayer.core.Result
-import com.iptvplayer.core.runCatching
+import com.iptvplayer.core.AppResult
+import com.iptvplayer.core.runCatchingSuspend
 import com.iptvplayer.data.local.database.EpgProgrammeDao
 import com.iptvplayer.data.local.entities.toDomain
 import com.iptvplayer.data.local.entities.toEntity
 import com.iptvplayer.data.parser.XmlTvParser
-import com.iptvplayer.data.remote.KtorClient
+import io.ktor.client.HttpClient
 import com.iptvplayer.domain.model.EpgProgramme
 import com.iptvplayer.domain.repository.EpgRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,12 +17,12 @@ import java.time.Instant
 
 class EpgRepositoryImpl(
     private val programmeDao: EpgProgrammeDao,
-    private val ktorClient: KtorClient,
+    private val httpClient: HttpClient,
     private val xmlTvParser: XmlTvParser,
     private val dispatcherProvider: DispatcherProvider
 ) : EpgRepository {
 
-    override suspend fun fetchAndCacheEpg(playlistIds: List<String>): Result<Unit> = runCatching {
+    override suspend fun fetchAndCacheEpg(playlistIds: List<String>): AppResult<Unit> = runCatchingSuspend {
         withContext(dispatcherProvider.io) {
             // TODO: Fetch XMLTV, parse, batch insert
             Unit
@@ -45,7 +45,7 @@ class EpgRepositoryImpl(
         return kotlinx.coroutines.flow.flow { emit(null) }
     }
 
-    override suspend fun clearStaleEpg(before: Instant): Result<Unit> = runCatching {
+    override suspend fun clearStaleEpg(before: Instant): AppResult<Unit> = runCatchingSuspend {
         withContext(dispatcherProvider.io) {
             programmeDao.deleteStale(before.toEpochMilli())
         }

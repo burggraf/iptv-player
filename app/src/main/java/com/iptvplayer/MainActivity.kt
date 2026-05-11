@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            IptvPlayerTheme {
+            com.iptvplayer.presentation.theme.IptvPlayerTheme.Content {
                 AppNavigation()
             }
         }

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.iptvplayer"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.iptvplayer"
@@ -44,9 +44,8 @@ android {
 
 dependencies {
     // Compose for TV
-    val tvCompose = "1.4.0"
-    implementation("androidx.tv:tv-material:$tvCompose")
-    implementation("androidx.tv:tv-foundation:$tvCompose")
+    implementation("androidx.tv:tv-material:1.0.1")
+    implementation("androidx.tv:tv-foundation:1.0.0-alpha12")
 
     // Core Compose
     val composeBom = platform("androidx.compose:compose-bom:2024.05.00")
@@ -55,7 +54,11 @@ dependencies {
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose")
+
+    // Activity
+    implementation("androidx.activity:activity-compose:1.9.0")
 
     // Media3 (ExoPlayer)
     val media3 = "1.3.1"
@@ -72,6 +75,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktor")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
     implementation("io.ktor:ktor-client-logging:$ktor")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     // Room
     val room = "2.6.1"
@@ -99,6 +103,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("app.cash.turbine:turbine:1.1.0")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("xpp3:xpp3:1.1.4c")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

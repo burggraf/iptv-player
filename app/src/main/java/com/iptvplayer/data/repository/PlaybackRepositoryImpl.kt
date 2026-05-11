@@ -7,8 +7,8 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
-import com.iptvplayer.core.Result
-import com.iptvplayer.core.runCatching
+import com.iptvplayer.core.AppResult
+import com.iptvplayer.core.runCatchingSuspend
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.PlaybackState
 import com.iptvplayer.domain.repository.PlaybackRepository
@@ -35,7 +35,7 @@ class PlaybackRepositoryImpl(
         )
         .build()
 
-    override suspend fun prepareChannel(channel: Channel): Result<Unit> = runCatching {
+    override suspend fun prepareChannel(channel: Channel): AppResult<Unit> = runCatchingSuspend {
         // Player preparation delegated to ViewModel; repo provides MediaItem
         Unit
     }

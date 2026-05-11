@@ -2,7 +2,7 @@ package com.iptvplayer.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iptvplayer.core.Result
+import com.iptvplayer.core.AppResult
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.PlaybackState
 import com.iptvplayer.domain.usecase.PlayChannelUseCase
@@ -30,16 +30,16 @@ class PlayerViewModel(
 
         viewModelScope.launch {
             when (val result = playChannelUseCase(channel)) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     _playbackState.value = PlaybackState.Playing(0L, 0L)
                 }
-                is Result.Error -> {
+                is AppResult.Error -> {
                     _playbackState.value = PlaybackState.Error(
                         message = result.exception.message ?: "Unknown error",
                         recoverable = true
                     )
                 }
-                is Result.Loading -> {}
+                is AppResult.Loading -> {}
             }
         }
     }

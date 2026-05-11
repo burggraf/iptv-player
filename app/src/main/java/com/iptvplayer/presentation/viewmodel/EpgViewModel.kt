@@ -2,7 +2,7 @@ package com.iptvplayer.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iptvplayer.core.Result
+import com.iptvplayer.core.AppResult
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.EpgProgramme
 import com.iptvplayer.domain.usecase.FetchEpgUseCase
@@ -30,16 +30,16 @@ class EpgViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             when (val result = fetchEpgUseCase(playlistIds)) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     _uiState.value = _uiState.value.copy(isLoading = false)
                 }
-                is Result.Error -> {
+                is AppResult.Error -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = result.exception.message
                     )
                 }
-                is Result.Loading -> {}
+                is AppResult.Loading -> {}
             }
         }
     }
