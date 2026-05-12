@@ -40,9 +40,13 @@ fun EpgScreen(
 
     // Load channels from selected playlist when entering EPG
     LaunchedEffect(selectedPlaylistId) {
+        android.util.Log.d("EpgScreen", "Loading channels for playlist: $selectedPlaylistId")
         if (selectedPlaylistId != null) {
             val channels = playlistViewModel.getChannels(selectedPlaylistId)
+            android.util.Log.d("EpgScreen", "Loaded ${channels.size} channels")
             epgViewModel.loadChannels(channels)
+        } else {
+            android.util.Log.d("EpgScreen", "No playlist selected")
         }
     }
 

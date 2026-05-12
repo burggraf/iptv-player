@@ -74,14 +74,18 @@ class PlaylistViewModel(
                 lastUpdated = Instant.now(),
             )
 
+            android.util.Log.d("PlaylistVM", "Adding playlist: $name, type=$type, serverUrl=$serverUrl")
+
             when (val result = playlistRepository.addPlaylist(playlist)) {
                 is AppResult.Success -> {
+                    android.util.Log.d("PlaylistVM", "Playlist added successfully: $name")
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         successMessage = "Playlist \"$name\" added",
                     )
                 }
                 is AppResult.Error -> {
+                    android.util.Log.e("PlaylistVM", "Failed to add playlist: $name", result.exception)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = result.exception.message ?: "Failed to add playlist"

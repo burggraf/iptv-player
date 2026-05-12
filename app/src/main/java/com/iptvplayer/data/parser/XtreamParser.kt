@@ -20,13 +20,31 @@ class XtreamParser {
 
     private val json = Json { ignoreUnknownKeys = true }
 
+    /**
+     * Parse a boolean value that may be represented as `true`/`false` or `1`/`0`.
+     * Some Xtream servers return integers instead of booleans.
+     */
+    private fun parseBoolean(element: kotlinx.serialization.json.JsonElement?): Boolean {
+        if (element == null) return false
+        val primitive = element.jsonPrimitive
+        // Try string first
+        if (primitive.isString) {
+            return primitive.content.lowercase() == "true" || primitive.content == "1"
+        }
+        // Try boolean (may throw if not actually a boolean)
+        val boolVal = try { primitive.boolean } catch (_: Exception) { null }
+        if (boolVal != null) return boolVal
+        // Try integer (1 = true, 0 = false)
+        return try { primitive.int == 1 } catch (_: Exception) { false }
+    }
+
     fun parseAuth(jsonString: String): XtreamAuthResponse {
         val root = json.parseToJsonElement(jsonString).jsonObject
 
         val userInfoObj = root["user_info"]?.jsonObject
         val userInfo = userInfoObj?.let { obj ->
             XtreamAuthResponse.UserInfo(
-                auth = obj["auth"]?.jsonPrimitive?.boolean ?: false,
+                auth = parseBoolean(obj["auth"]),
                 username = obj["username"]?.jsonPrimitive?.content,
                 status = obj["status"]?.jsonPrimitive?.content,
                 expDate = obj["exp_date"]?.jsonPrimitive?.content,

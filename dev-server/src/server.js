@@ -20,9 +20,10 @@ app.get('/player_api.php', (req, res) => {
   if (!username || !password) {
     return res.json({ user_info: { auth: false, message: 'Missing credentials' } });
   }
-  if (username !== 'demo' || password !== 'demo') {
-    return res.json({ user_info: { auth: false, message: 'Invalid credentials' } });
-  }
+  // Accept any credentials for development
+  // if (username !== 'demo' || password !== 'demo') {
+  //   return res.json({ user_info: { auth: false, message: 'Invalid credentials' } });
+  // }
 
   switch (action) {
     case 'get_live_categories':
@@ -35,7 +36,7 @@ app.get('/player_api.php', (req, res) => {
 
     case 'get_live_streams': {
       const streams = JSON.parse(
-        fs.readFileSync(path.join(__dirname, 'data/xtream-streams.json'), 'utf8')
+        fs.readFileSync(path.join(__dirname, '..', 'data/xtream-streams.json'), 'utf8')
       );
       const cat = req.query.category_id;
       return res.json(cat ? streams.filter(s => s.category_id === cat) : streams);
@@ -61,7 +62,7 @@ app.get('/epg.xml', (req, res) => {
   res.sendFile(path.join(__dirname, 'data/sample.xml'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌐 Mock IPTV server → http://localhost:${PORT}`);
   console.log(`   M3U:    http://localhost:${PORT}/playlist.m3u`);
   console.log(`   Xtream: http://localhost:${PORT}/player_api.php?username=demo&password=demo`);

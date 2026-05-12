@@ -30,6 +30,7 @@ class PlaylistRepositoryImpl(
     override suspend fun addPlaylist(playlist: Playlist): AppResult<Unit> = runCatchingSuspend {
         withContext(dispatcherProvider.io) {
             playlistDao.insert(playlist.toEntity())
+            android.util.Log.d("PlaylistRepo", "Playlist inserted: ${playlist.name}")
 
             val channels = when (playlist.type) {
                 PlaylistType.M3U_URL -> {
@@ -37,6 +38,7 @@ class PlaylistRepositoryImpl(
                 }
                 PlaylistType.XTREAM -> {
                     playlist.serverUrl?.let { serverUrl ->
+                        android.util.Log.d("PlaylistRepo", "Fetching Xtream from $serverUrl")
                         fetchAndParseXtream(
                             serverUrl = serverUrl,
                             username = playlist.username ?: "",
@@ -48,8 +50,11 @@ class PlaylistRepositoryImpl(
                 PlaylistType.M3U_FILE -> emptyList() // handled by caller
             }
 
+            android.util.Log.d("PlaylistRepo", "Fetched ${channels.size} channels for ${playlist.name}")
+
             if (channels.isNotEmpty()) {
                 channelDao.insertAll(channels.map { it.toEntity() })
+                android.util.Log.d("PlaylistRepo", "Inserted ${channels.size} channels into DB")
             }
         }
     }
