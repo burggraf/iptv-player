@@ -24,14 +24,14 @@ if [ -z "$APK_PATH" ]; then
 fi
 echo "📦 APK: ${APK_PATH} ($(du -h "$APK_PATH" | cut -f1))"
 
-# Check for connected device
-DEVICES=$(adb devices | grep -E "device$" | wc -l | tr -d ' ')
-if [ "$DEVICES" -eq 0 ]; then
+# Check for connected device (|| true prevents pipefail from killing script when grep finds nothing)
+DEVICE_LIST=$(adb devices 2>&1 | grep -E "\tdevice$" || true)
+if [ -z "$DEVICE_LIST" ]; then
     echo "❌ No device connected. Run: ./scripts/adb-connect.sh [TV_IP]"
     exit 1
 fi
 
-DEVICE=$(adb devices | grep -E "device$" | head -1 | awk '{print $1}')
+DEVICE=$(echo "$DEVICE_LIST" | head -1 | awk '{print $1}')
 echo "📺 Installing on ${DEVICE}..."
 adb -s "$DEVICE" install -r "$APK_PATH"
 
