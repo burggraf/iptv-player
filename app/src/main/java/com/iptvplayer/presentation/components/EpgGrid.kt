@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Surface
+import com.iptvplayer.domain.model.Channel
 
 /**
  * EPG grid component — placeholder.
@@ -15,11 +16,14 @@ import androidx.tv.material3.Surface
 @Composable
 fun EpgGrid(
     modifier: Modifier = Modifier,
-    // TODO: channels, programmes, currentTime, scroll states, callbacks
+    channels: List<Channel> = emptyList(),
+    onChannelSelected: (Channel) -> Unit = {},
 ) {
     Surface(modifier = modifier.padding(16.dp)) {
         Box {
-            Text("EPG Grid — Coming in Phase 4")
+            if (channels.isEmpty()) {
+                Text("EPG Grid — Load a playlist to see channels. Phase 4 will implement the full grid.")
+            }
         }
     }
 }

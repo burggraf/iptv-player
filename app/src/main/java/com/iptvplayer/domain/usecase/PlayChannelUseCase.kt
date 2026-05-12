@@ -9,6 +9,6 @@ class PlayChannelUseCase(
     private val repository: PlaybackRepository
 ) {
     suspend operator fun invoke(channel: Channel): AppResult<Unit> = runCatchingSuspend {
-        repository.prepareChannel(channel)
+        repository.playChannel(channel)
     }
 }
