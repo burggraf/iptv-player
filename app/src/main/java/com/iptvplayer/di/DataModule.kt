@@ -10,10 +10,12 @@ import com.iptvplayer.data.repository.EpgRepositoryImpl
 import com.iptvplayer.data.repository.FavoritesRepositoryImpl
 import com.iptvplayer.data.repository.PlaylistRepositoryImpl
 import com.iptvplayer.data.repository.PlaybackRepositoryImpl
+import com.iptvplayer.data.repository.SettingsRepositoryImpl
 import com.iptvplayer.domain.repository.EpgRepository
 import com.iptvplayer.domain.repository.FavoritesRepository
 import com.iptvplayer.domain.repository.PlaybackRepository
 import com.iptvplayer.domain.repository.PlaylistRepository
+import com.iptvplayer.domain.repository.SettingsRepository
 import io.ktor.client.HttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -57,6 +59,12 @@ val dataModule = module {
         FavoritesRepositoryImpl(
             favoriteDao = get(),
             dispatcherProvider = get()
+        )
+    }
+
+    single<SettingsRepository> {
+        SettingsRepositoryImpl(
+            context = androidContext()
         )
     }
 }

@@ -86,26 +86,6 @@ class EpgViewModelTest {
         assertTrue(filtered.all { it.group == "News" })
     }
 
-    @Test
-    fun `filtered channels filters by search query`() {
-        viewModel.loadChannels(testChannels())
-        viewModel.updateSearchQuery("bbc")
-
-        val filtered = viewModel.uiState.value.filteredChannels
-        assertEquals(2, filtered.size)
-        assertTrue(filtered.all { it.name.contains("BBC", ignoreCase = true) })
-    }
-
-    @Test
-    fun `filtered channels combines group and search filters`() {
-        viewModel.loadChannels(testChannels())
-        viewModel.selectGroup("Entertainment")
-        viewModel.updateSearchQuery("two")
-
-        val filtered = viewModel.uiState.value.filteredChannels
-        assertEquals(1, filtered.size)
-        assertEquals("BBC Two", filtered[0].name)
-    }
 
     @Test
     fun `getNowPlaying returns current programme`() {

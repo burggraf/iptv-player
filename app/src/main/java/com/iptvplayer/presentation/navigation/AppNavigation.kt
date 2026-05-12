@@ -17,6 +17,7 @@ import com.iptvplayer.presentation.viewmodel.EpgViewModel
 import com.iptvplayer.presentation.viewmodel.FavoritesViewModel
 import com.iptvplayer.presentation.viewmodel.PlayerViewModel
 import com.iptvplayer.presentation.viewmodel.PlaylistViewModel
+import com.iptvplayer.presentation.viewmodel.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 sealed class Screen(val route: String) {
@@ -35,6 +36,7 @@ fun AppNavigation() {
     val epgViewModel: EpgViewModel = koinViewModel()
     val playlistViewModel: PlaylistViewModel = koinViewModel()
     val favoritesViewModel: FavoritesViewModel = koinViewModel()
+    val settingsViewModel: SettingsViewModel = koinViewModel()
 
     NavHost(
         navController = navController,
@@ -66,16 +68,43 @@ fun AppNavigation() {
         composable(Screen.FullscreenPlayer.route) {
             val currentChannel by playerViewModel.currentChannel.collectAsState()
             val playbackState by playerViewModel.playbackState.collectAsState()
+            val numberBuffer by playerViewModel.numberBuffer.collectAsState()
 
             FullscreenPlayerScreen(
                 player = playerViewModel.player,
                 channel = currentChannel,
                 playbackState = playbackState,
+                numberBuffer = numberBuffer,
+                onNumberInput = { playerViewModel.onNumberInput(it) },
+                onSwitchChannel = { playerViewModel.switchChannel(it) },
+                onSwitchChannelInGroup = { playerViewModel.switchChannelInGroup(it) },
                 onBack = { navController.popBackStack() }
             )
         }
         composable(Screen.Settings.route) {
+            val settingsState by settingsViewModel.uiState.collectAsState()
+            val s = settingsState.settings
             SettingsScreen(
+                state = com.iptvplayer.presentation.screens.settings.SettingsScreenState(
+                    epgRefreshIntervalHours = s.epgRefreshIntervalHours,
+                    pixelPerMinute = s.pixelPerMinute,
+                    channelSwitchDelayMs = s.channelSwitchDelayMs,
+                    startOnLastChannel = s.startOnLastChannel,
+                    showChannelNumbers = s.showChannelNumbers,
+                    bufferSize = s.bufferSize.label,
+                    error = settingsState.error,
+                    successMessage = settingsState.successMessage,
+                ),
+                onEpgRefreshIntervalChange = { settingsViewModel.updateEpgRefreshInterval(it) },
+                onPixelPerMinuteChange = { settingsViewModel.updatePixelPerMinute(it) },
+                onChannelSwitchDelayChange = { settingsViewModel.updateChannelSwitchDelay(it) },
+                onStartOnLastChannelToggle = { settingsViewModel.toggleStartOnLastChannel() },
+                onShowChannelNumbersToggle = { settingsViewModel.toggleShowChannelNumbers() },
+                onBufferSizeChange = { label ->
+                    val size = com.iptvplayer.domain.model.BufferSize.entries.find { it.label == label }
+                        ?: com.iptvplayer.domain.model.BufferSize.MEDIUM
+                    settingsViewModel.updateBufferSize(size)
+                },
                 onBack = { navController.popBackStack() }
             )
         }

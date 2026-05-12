@@ -24,34 +24,38 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import androidx.tv.material3.LocalContentColor
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.PlaybackState
 import kotlinx.coroutines.delay
 
-/**
- * Fullscreen player screen — Media3 PlayerView with full transport controls.
- * Controls auto-hide after 4s of inactivity. DPad navigable.
- */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FullscreenPlayerScreen(
     player: Player,
     channel: Channel?,
     playbackState: PlaybackState = PlaybackState.Idle,
+    numberBuffer: String = "",
+    onNumberInput: (String) -> Unit = {},
+    onSwitchChannel: (Int) -> Unit = {},
+    onSwitchChannelInGroup: (Int) -> Unit = {},
     onBack: () -> Unit,
     onToggleFullscreen: () -> Unit = {},
 ) {
     var showControls by remember { mutableStateOf(true) }
 
-    // Auto-hide controls after inactivity
     LaunchedEffect(showControls) {
         if (showControls) {
             delay(CONTROLS_TIMEOUT_MS)
@@ -63,68 +67,104 @@ fun FullscreenPlayerScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
+            .onPreviewKeyEvent { keyEvent ->
+                if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+
+                when (keyEvent.key) {
+                    // Number pad input
+                    Key.Zero -> { onNumberInput("0"); true }
+                    Key.One -> { onNumberInput("1"); true }
+                    Key.Two -> { onNumberInput("2"); true }
+                    Key.Three -> { onNumberInput("3"); true }
+                    Key.Four -> { onNumberInput("4"); true }
+                    Key.Five -> { onNumberInput("5"); true }
+                    Key.Six -> { onNumberInput("6"); true }
+                    Key.Seven -> { onNumberInput("7"); true }
+                    Key.Eight -> { onNumberInput("8"); true }
+                    Key.Nine -> { onNumberInput("9"); true }
+
+                    // DPad up/down: switch channel in list
+                    Key.DirectionUp -> {
+                        onSwitchChannelInGroup(-1)
+                        showControls = true
+                        true
+                    }
+                    Key.DirectionDown -> {
+                        onSwitchChannelInGroup(1)
+                        showControls = true
+                        true
+                    }
+
+                    // DPad left/right: toggle controls
+                    Key.DirectionLeft -> {
+                        showControls = true
+                        false
+                    }
+                    Key.DirectionRight -> {
+                        showControls = true
+                        false
+                    }
+
+                    // Center/Enter: toggle controls
+                    Key.Enter, Key.NumPadEnter -> {
+                        showControls = !showControls
+                        true
+                    }
+
+                    // Back: navigate back
+                    Key.Back, Key.Escape -> {
+                        onBack()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
     ) {
-        // Video surface with controls
         AndroidView(
             factory = { context ->
                 PlayerView(context).apply {
                     this.player = player
-                    useController = true
-                    controllerShowTimeoutMs = CONTROLS_TIMEOUT_MS.toInt()
+                    useController = false // We handle controls ourselves
                     setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
                     resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
                     keepScreenOn = true
-                    // Enable DPad navigation
                     isFocusable = true
-                    setOnClickListener {
-                        // Toggle controls visibility on click
-                        showControls = !showControls
-                    }
                 }
             },
-            update = { view ->
-                view.player = player
-            },
-            modifier = Modifier.fillMaxSize()
+            update = { it.player = player },
+            modifier = Modifier.fillMaxSize(),
         )
 
-        // Top bar with back button
+        // Top bar
         AnimatedVisibility(
             visible = showControls,
             enter = fadeIn(),
             exit = fadeOut(),
-            modifier = Modifier.align(Alignment.TopStart)
+            modifier = Modifier.align(Alignment.TopStart),
         ) {
             Row(
                 modifier = Modifier
                     .padding(16.dp)
                     .background(Color.Black.copy(alpha = 0.5f))
                     .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(
-                    onClick = onBack,
-                    modifier = Modifier.size(40.dp)
-                ) {
+                IconButton(onClick = onBack, modifier = Modifier.size(40.dp)) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back to EPG",
-                        tint = Color.White
+                        tint = Color.White,
                     )
                 }
-
                 channel?.let { ch ->
                     Column(modifier = Modifier.padding(start = 12.dp)) {
-                        Text(
-                            text = ch.name,
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Text(text = ch.name, color = Color.White, style = MaterialTheme.typography.titleMedium)
                         ch.group?.let { group ->
                             Text(
-                                text = "$group • Channel ${ch.number}",
+                                text = "$group \u2022 Channel ${ch.number}",
                                 color = Color.White.copy(alpha = 0.7f),
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
                             )
                         }
                     }
@@ -132,7 +172,28 @@ fun FullscreenPlayerScreen(
             }
         }
 
-        // Loading indicator (overlay when controls hidden)
+        // Number buffer display
+        AnimatedVisibility(
+            visible = numberBuffer.isNotEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.TopEnd),
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+            ) {
+                Text(
+                    text = numberBuffer,
+                    color = Color.White,
+                    style = MaterialTheme.typography.displayMedium,
+                )
+            }
+        }
+
+        // Loading indicator
         AnimatedVisibility(
             visible = (playbackState is PlaybackState.Loading || playbackState is PlaybackState.Buffering) && !showControls,
             enter = fadeIn(),
@@ -140,12 +201,12 @@ fun FullscreenPlayerScreen(
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(Color.Black.copy(alpha = 0.4f))
-                .padding(12.dp)
+                .padding(12.dp),
         ) {
             CircularProgressIndicator(
                 modifier = Modifier.size(40.dp),
                 color = Color.White,
-                strokeWidth = 3.dp
+                strokeWidth = 3.dp,
             )
         }
     }

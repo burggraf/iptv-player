@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.iptvplayer.data.local.database.AppDatabase
 import com.iptvplayer.core.DispatcherProvider
+import com.iptvplayer.core.NetworkMonitor
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -16,6 +17,7 @@ val appModule = module {
     single { get<AppDatabase>().epgProgrammeDao() }
     single { get<AppDatabase>().favoriteDao() }
     single { DispatcherProvider(io = Dispatchers.IO, default = Dispatchers.Default, main = Dispatchers.Main) }
+    single { NetworkMonitor(androidContext()) }
 }
 
 private fun provideDatabase(context: Context): AppDatabase =

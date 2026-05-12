@@ -6,6 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.iptvplayer.data.worker.EpgRefreshWorker
 import com.iptvplayer.data.worker.PlaylistRefreshWorker
 import com.iptvplayer.di.appModule
 import com.iptvplayer.di.dataModule
@@ -26,6 +27,7 @@ class IptvPlayerApp : Application() {
             modules(appModule, dataModule, domainModule)
         }
         schedulePlaylistRefresh()
+        scheduleEpgRefresh()
     }
 
     private fun schedulePlaylistRefresh() {
@@ -41,6 +43,24 @@ class IptvPlayerApp : Application() {
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "playlist_refresh",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+    }
+
+    private fun scheduleEpgRefresh() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workRequest = PeriodicWorkRequestBuilder<EpgRefreshWorker>(
+            6, TimeUnit.HOURS
+        )
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            EpgRefreshWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             workRequest
         )

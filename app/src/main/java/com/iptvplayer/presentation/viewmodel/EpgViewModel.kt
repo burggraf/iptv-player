@@ -6,9 +6,14 @@ import com.iptvplayer.core.AppResult
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.EpgProgramme
 import com.iptvplayer.domain.usecase.FetchEpgUseCase
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 
@@ -58,12 +63,25 @@ data class EpgUiState(
     }
 }
 
+@OptIn(FlowPreview::class)
 class EpgViewModel(
     private val fetchEpgUseCase: FetchEpgUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EpgUiState())
     val uiState: StateFlow<EpgUiState> = _uiState.asStateFlow()
+
+    private val _rawSearchQuery = MutableStateFlow("")
+    private val _searchQuery = _rawSearchQuery.debounce(300)
+
+    init {
+        // Debounce search input
+        _searchQuery
+            .onEach { query ->
+                _uiState.update { it.copy(searchQuery = query) }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun getFilteredChannels(): List<Channel> = uiState.value.filteredChannels
 
@@ -111,8 +129,11 @@ class EpgViewModel(
         _uiState.value = _uiState.value.copy(selectedGroup = group)
     }
 
-    fun updateSearchQuery(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
+    fun setSearchQuery(query: String) {
+        _rawSearchQuery.value = query
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 }
-
