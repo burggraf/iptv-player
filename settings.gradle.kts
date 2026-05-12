@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "IptvPlayer"
 include(":app")
+// include(":benchmark")
+// include(":baseline-profile")  // TODO: fix baseline profile DSL (com.android.test plugin)
