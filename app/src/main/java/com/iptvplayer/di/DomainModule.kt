@@ -4,7 +4,9 @@ import com.iptvplayer.domain.usecase.FetchEpgUseCase
 import com.iptvplayer.domain.usecase.LoadPlaylistUseCase
 import com.iptvplayer.domain.usecase.PlayChannelUseCase
 import com.iptvplayer.presentation.viewmodel.EpgViewModel
+import com.iptvplayer.presentation.viewmodel.FavoritesViewModel
 import com.iptvplayer.presentation.viewmodel.PlayerViewModel
+import com.iptvplayer.presentation.viewmodel.PlaylistViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -23,6 +25,18 @@ val domainModule = module {
     viewModel {
         EpgViewModel(
             fetchEpgUseCase = get()
+        )
+    }
+
+    viewModel {
+        PlaylistViewModel(
+            playlistRepository = get()
+        )
+    }
+
+    viewModel {
+        FavoritesViewModel(
+            favoritesRepository = get()
         )
     }
 }

@@ -81,6 +81,9 @@ interface FavoriteDao {
     @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE channelId = :channelId)")
     fun isFavorite(channelId: String): Flow<Boolean>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE channelId = :channelId)")
+    suspend fun isFavoriteSync(channelId: String): Boolean
+
     @Query("SELECT channelId FROM favorites ORDER BY addedAt DESC")
     fun getFavorites(): Flow<List<String>>
 }

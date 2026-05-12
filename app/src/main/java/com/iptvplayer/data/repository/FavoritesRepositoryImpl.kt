@@ -16,12 +16,17 @@ class FavoritesRepositoryImpl(
 
     override suspend fun toggleFavorite(channelId: String): AppResult<Unit> = runCatchingSuspend {
         withContext(dispatcherProvider.io) {
-            favoriteDao.insert(
-                FavoriteChannelEntity(
-                    channelId = channelId,
-                    addedAt = System.currentTimeMillis()
+            val alreadyFavorite = favoriteDao.isFavoriteSync(channelId)
+            if (alreadyFavorite) {
+                favoriteDao.delete(channelId)
+            } else {
+                favoriteDao.insert(
+                    FavoriteChannelEntity(
+                        channelId = channelId,
+                        addedAt = System.currentTimeMillis()
+                    )
                 )
-            )
+            }
         }
     }
 
