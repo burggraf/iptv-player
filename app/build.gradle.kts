@@ -119,4 +119,10 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Phase 7 — Memory leak detection (debug builds only)
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+
+    // Phase 7 — Compose test helpers
+    androidTestImplementation("androidx.compose.ui:ui-test-manifest")
 }

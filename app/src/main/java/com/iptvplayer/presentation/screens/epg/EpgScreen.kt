@@ -17,22 +17,34 @@ import com.iptvplayer.presentation.components.SearchBar
 import com.iptvplayer.presentation.components.VideoPreview
 import com.iptvplayer.presentation.viewmodel.EpgViewModel
 import com.iptvplayer.presentation.viewmodel.PlayerViewModel
+import com.iptvplayer.presentation.viewmodel.PlaylistViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.java.KoinJavaComponent.getKoin
 
 @Composable
 fun EpgScreen(
+    selectedPlaylistId: String?,
     playerViewModel: PlayerViewModel = koinViewModel(),
     epgViewModel: EpgViewModel = koinViewModel(),
+    playlistViewModel: PlaylistViewModel = koinViewModel(),
     onNavigateToFullscreen: () -> Unit,
     onBack: () -> Unit,
 ) {
     val uiState by epgViewModel.uiState.collectAsStateWithLifecycle()
     val currentChannel by playerViewModel.currentChannel.collectAsStateWithLifecycle()
     val playbackState by playerViewModel.playbackState.collectAsStateWithLifecycle()
+    val playlistState by playlistViewModel.uiState.collectAsStateWithLifecycle()
 
     val networkMonitor: NetworkMonitor = getKoin().get()
     val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle(true)
+
+    // Load channels from selected playlist when entering EPG
+    LaunchedEffect(selectedPlaylistId) {
+        if (selectedPlaylistId != null) {
+            val channels = playlistViewModel.getChannels(selectedPlaylistId)
+            epgViewModel.loadChannels(channels)
+        }
+    }
 
     // Sync channels to PlayerViewModel for quick channel switching
     LaunchedEffect(uiState.channels) {
@@ -78,7 +90,7 @@ fun EpgScreen(
                     epgViewModel.selectGroup(group)
                 },
                 onRefresh = {
-                    epgViewModel.fetchEpg(emptyList())
+                    selectedPlaylistId?.let { epgViewModel.fetchEpg(listOf(it)) }
                 },
             )
         }

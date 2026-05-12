@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,27 +13,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.offset
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
+import com.iptvplayer.presentation.theme.AppColors
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-/**
- * Pixel width per minute of EPG timeline.
- * 2px/min → 60px per 30min slot, 120px per hour.
- */
 const val PIXELS_PER_MINUTE = 2f
 
-/**
- * Time header showing fixed-width time labels synced with programme cells.
- * Red current-time line overlay.
- */
 @Composable
 fun TimeHeader(
     startTime: Instant,
@@ -41,7 +33,7 @@ fun TimeHeader(
     modifier: Modifier = Modifier,
     channelNameWidth: Dp = 100.dp,
 ) {
-    val density = LocalDensity.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
     val channelNamePx = remember(channelNameWidth, density) {
         with(density) { channelNameWidth.toPx() }
     }
@@ -51,10 +43,8 @@ fun TimeHeader(
             modifier = Modifier.align(Alignment.CenterStart),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Spacer for channel name column
             Spacer(modifier = Modifier.width(channelNameWidth))
 
-            // Time labels at 30-min intervals
             val totalMinutes = (endTime.epochSecond - startTime.epochSecond) / 60
             var elapsedMinutes = 0
             while (elapsedMinutes < totalMinutes) {
@@ -68,7 +58,8 @@ fun TimeHeader(
                 Text(
                     text = label,
                     fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = AppColors.TextSecondary,
+                    fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.width(slotWidth)
                 )
@@ -86,10 +77,10 @@ fun TimeHeader(
         if (lineOffsetPx > channelNamePx) {
             Spacer(
                 modifier = Modifier
-                    .offset { IntOffset(lineOffsetDp.roundToPx(), 0) }
+                    .offset { androidx.compose.ui.unit.IntOffset(lineOffsetDp.value.toInt(), 0) }
                     .width(2.dp)
                     .height(36.dp)
-                    .background(Color(0xFFFF3B30))
+                    .background(AppColors.EpgTimeIndicator)
             )
         }
     }

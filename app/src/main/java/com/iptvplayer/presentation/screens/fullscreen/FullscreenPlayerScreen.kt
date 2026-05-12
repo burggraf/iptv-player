@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,13 +32,16 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.PlaybackState
+import com.iptvplayer.presentation.theme.AppColors
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -71,7 +74,6 @@ fun FullscreenPlayerScreen(
                 if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
 
                 when (keyEvent.key) {
-                    // Number pad input
                     Key.Zero -> { onNumberInput("0"); true }
                     Key.One -> { onNumberInput("1"); true }
                     Key.Two -> { onNumberInput("2"); true }
@@ -83,7 +85,6 @@ fun FullscreenPlayerScreen(
                     Key.Eight -> { onNumberInput("8"); true }
                     Key.Nine -> { onNumberInput("9"); true }
 
-                    // DPad up/down: switch channel in list
                     Key.DirectionUp -> {
                         onSwitchChannelInGroup(-1)
                         showControls = true
@@ -95,7 +96,6 @@ fun FullscreenPlayerScreen(
                         true
                     }
 
-                    // DPad left/right: toggle controls
                     Key.DirectionLeft -> {
                         showControls = true
                         false
@@ -105,13 +105,11 @@ fun FullscreenPlayerScreen(
                         false
                     }
 
-                    // Center/Enter: toggle controls
                     Key.Enter, Key.NumPadEnter -> {
                         showControls = !showControls
                         true
                     }
 
-                    // Back: navigate back
                     Key.Back, Key.Escape -> {
                         onBack()
                         true
@@ -125,7 +123,7 @@ fun FullscreenPlayerScreen(
             factory = { context ->
                 PlayerView(context).apply {
                     this.player = player
-                    useController = false // We handle controls ourselves
+                    useController = false
                     setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
                     resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
                     keepScreenOn = true
@@ -136,7 +134,7 @@ fun FullscreenPlayerScreen(
             modifier = Modifier.fillMaxSize(),
         )
 
-        // Top bar
+        // Top bar with channel info
         AnimatedVisibility(
             visible = showControls,
             enter = fadeIn(),
@@ -145,9 +143,9 @@ fun FullscreenPlayerScreen(
         ) {
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.Black.copy(alpha = 0.5f))
-                    .padding(4.dp),
+                    .padding(20.dp)
+                    .background(Color(0xFF000000).copy(alpha = 0.6f), RoundedCornerShape(10.dp))
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onBack, modifier = Modifier.size(40.dp)) {
@@ -159,12 +157,17 @@ fun FullscreenPlayerScreen(
                 }
                 channel?.let { ch ->
                     Column(modifier = Modifier.padding(start = 12.dp)) {
-                        Text(text = ch.name, color = Color.White, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = ch.name,
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
                         ch.group?.let { group ->
                             Text(
-                                text = "$group \u2022 Channel ${ch.number}",
-                                color = Color.White.copy(alpha = 0.7f),
-                                style = MaterialTheme.typography.bodySmall,
+                                text = "$group  •  Channel ${ch.number}",
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontSize = 12.sp,
                             )
                         }
                     }
@@ -181,14 +184,15 @@ fun FullscreenPlayerScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.Black.copy(alpha = 0.7f))
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                    .padding(20.dp)
+                    .background(Color(0xFF000000).copy(alpha = 0.7f), RoundedCornerShape(10.dp))
+                    .padding(horizontal = 28.dp, vertical = 14.dp),
             ) {
                 Text(
                     text = numberBuffer,
-                    color = Color.White,
-                    style = MaterialTheme.typography.displayMedium,
+                    color = AppColors.Primary,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
@@ -200,14 +204,22 @@ fun FullscreenPlayerScreen(
             exit = fadeOut(),
             modifier = Modifier
                 .align(Alignment.Center)
-                .background(Color.Black.copy(alpha = 0.4f))
-                .padding(12.dp),
+                .background(Color(0xFF000000).copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                .padding(16.dp),
         ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(40.dp),
-                color = Color.White,
-                strokeWidth = 3.dp,
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(40.dp),
+                    color = AppColors.Primary,
+                    strokeWidth = 3.dp,
+                )
+                Text(
+                    text = if (playbackState is PlaybackState.Buffering) "Buffering..." else "Loading...",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
         }
     }
 }

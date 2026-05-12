@@ -15,21 +15,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Surface
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.EpgProgramme
+import com.iptvplayer.presentation.theme.AppColors
 import java.time.Instant
 
-/**
- * Single channel row in the EPG grid.
- * Left: channel name column. Right: horizontally scrollable programme cells.
- */
 @Composable
 fun ChannelRow(
     channel: Channel,
@@ -45,7 +40,7 @@ fun ChannelRow(
     Row(
         modifier = Modifier
             .height(56.dp)
-            .background(Color(0xFF16213E))
+            .background(AppColors.EpgBackground)
     ) {
         // Channel name column
         Surface(
@@ -53,7 +48,7 @@ fun ChannelRow(
             modifier = Modifier
                 .width(channelNameWidth)
                 .fillMaxHeight()
-                .background(Color(0xFF0F3460))
+                .background(AppColors.EpgChannelNameBg)
         ) {
             Box(
                 modifier = Modifier.padding(horizontal = 8.dp),
@@ -62,20 +57,19 @@ fun ChannelRow(
                 Text(
                     text = channel.name,
                     fontSize = 13.sp,
-                    color = Color.White,
+                    color = AppColors.TextPrimary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }
         }
 
-        // Programme cells (horizontal scroll synced with header)
+        // Programme cells
         Box(
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
                 .fillMaxHeight()
         ) {
-            // Total timeline width
             val totalMinutes = (endTime.epochSecond - startTime.epochSecond) / 60
             val totalWidthDp = (totalMinutes * pixelPerMinute).dp
 
@@ -85,7 +79,6 @@ fun ChannelRow(
                     .fillMaxHeight()
             )
 
-            // Programme cells positioned on the timeline
             programmes.forEach { programme ->
                 ProgrammeCell(
                     programme = programme,
@@ -105,7 +98,7 @@ fun ChannelRow(
                         .offset { androidx.compose.ui.unit.IntOffset(lineOffsetDp.value.toInt(), 0) }
                         .width(2.dp)
                         .fillMaxHeight()
-                        .background(Color(0xFFFF3B30).copy(alpha = 0.6f))
+                        .background(AppColors.EpgTimeIndicator.copy(alpha = 0.6f))
                 )
             }
         }

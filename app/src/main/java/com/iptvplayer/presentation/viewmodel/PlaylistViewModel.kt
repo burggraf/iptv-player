@@ -143,4 +143,9 @@ class PlaylistViewModel(
     fun clearMessages() {
         _uiState.value = _uiState.value.copy(error = null, successMessage = null)
     }
+
+    fun getChannels(playlistId: String): List<com.iptvplayer.domain.model.Channel> {
+        return playlistRepository.getChannels(playlistId)
+            .let { kotlinx.coroutines.runBlocking { it.first() } }
+    }
 }

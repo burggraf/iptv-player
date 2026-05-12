@@ -24,14 +24,19 @@ if [ -z "$APK_PATH" ]; then
 fi
 echo "📦 APK: ${APK_PATH} ($(du -h "$APK_PATH" | cut -f1))"
 
-# Check for connected device (|| true prevents pipefail from killing script when grep finds nothing)
+# Prefer physical device over emulator
 DEVICE_LIST=$(adb devices 2>&1 | grep -E "\tdevice$" || true)
 if [ -z "$DEVICE_LIST" ]; then
     echo "❌ No device connected. Run: ./scripts/adb-connect.sh [TV_IP]"
     exit 1
 fi
 
-DEVICE=$(echo "$DEVICE_LIST" | head -1 | awk '{print $1}')
+# Filter out emulator devices, prefer physical connection
+DEVICE=$(echo "$DEVICE_LIST" | grep -v "emulator-" | head -1 | awk '{print $1}')
+if [ -z "$DEVICE" ]; then
+    # Fallback to emulator if no physical device
+    DEVICE=$(echo "$DEVICE_LIST" | head -1 | awk '{print $1}')
+fi
 echo "📺 Installing on ${DEVICE}..."
 adb -s "$DEVICE" install -r "$APK_PATH"
 

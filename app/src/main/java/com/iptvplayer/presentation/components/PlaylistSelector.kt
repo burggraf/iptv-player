@@ -1,17 +1,21 @@
 package com.iptvplayer.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.tv.material3.ListItem
+import androidx.tv.material3.ClickableSurfaceDefaults
+import androidx.tv.material3.SelectableSurfaceDefaults
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
+import com.iptvplayer.presentation.theme.AppColors
 
 data class PlaylistInfo(
     val id: String,
@@ -19,9 +23,6 @@ data class PlaylistInfo(
     val channelCount: Int,
 )
 
-/**
- * Playlist selector — TV Material list items for switching between loaded playlists.
- */
 @Composable
 fun PlaylistSelector(
     modifier: Modifier = Modifier,
@@ -30,22 +31,28 @@ fun PlaylistSelector(
     onPlaylistSelected: (String) -> Unit = {},
     onAddPlaylist: () -> Unit = {},
 ) {
-    androidx.compose.foundation.layout.Column(
+    Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
             text = "Playlists",
-            style = TextStyle(fontSize = 14.sp),
+            fontSize = 14.sp,
+            color = AppColors.TextSecondary,
             modifier = Modifier.padding(start = 16.dp, bottom = 4.dp),
         )
 
         if (playlists.isEmpty()) {
-            Surface(onClick = onAddPlaylist, modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                onClick = onAddPlaylist,
+                shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(8.dp)),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Text(
                     text = "+ Add Playlist",
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-                    style = TextStyle(fontSize = 16.sp),
+                    fontSize = 16.sp,
+                    color = AppColors.TextPrimary,
                 )
             }
         } else {
@@ -54,16 +61,18 @@ fun PlaylistSelector(
                 Surface(
                     onClick = { onPlaylistSelected(info.id) },
                     selected = selected,
+                    shape = SelectableSurfaceDefaults.shape(RoundedCornerShape(8.dp)),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Text(text = info.name, style = TextStyle(fontSize = 14.sp))
+                        Text(text = info.name, fontSize = 14.sp, color = AppColors.TextPrimary)
                         Text(
                             text = "(${info.channelCount})",
-                            style = TextStyle(fontSize = 12.sp),
+                            fontSize = 12.sp,
+                            color = AppColors.TextTertiary,
                         )
                     }
                 }

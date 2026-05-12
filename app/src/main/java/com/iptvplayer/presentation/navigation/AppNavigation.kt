@@ -1,9 +1,10 @@
 package com.iptvplayer.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,6 +21,15 @@ import com.iptvplayer.presentation.viewmodel.PlaylistViewModel
 import com.iptvplayer.presentation.viewmodel.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
+data class AddPlaylistRouteArgs(
+    val name: String? = null,
+    val type: String = "XTREAM",
+    val serverUrl: String? = null,
+    val url: String? = null,
+    val username: String? = null,
+    val password: String? = null,
+)
+
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Epg : Screen("epg")
@@ -30,17 +40,24 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
+fun AppNavigation(
+    navController: NavHostController = rememberNavController(),
+    initialPlaylistArgs: AddPlaylistRouteArgs? = null,
+) {
     val playerViewModel: PlayerViewModel = koinViewModel()
     val epgViewModel: EpgViewModel = koinViewModel()
     val playlistViewModel: PlaylistViewModel = koinViewModel()
     val favoritesViewModel: FavoritesViewModel = koinViewModel()
     val settingsViewModel: SettingsViewModel = koinViewModel()
 
+    val startRoute = if (initialPlaylistArgs != null) {
+        com.iptvplayer.presentation.screens.addplaylist.AddPlaylistScreen.initialArgs = initialPlaylistArgs
+        Screen.AddPlaylist.route
+    } else Screen.Home.route
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = startRoute
     ) {
         composable(Screen.Home.route) {
             val playlistState by playlistViewModel.uiState.collectAsState()
@@ -49,7 +66,10 @@ fun AppNavigation() {
                 selectedPlaylistId = playlistState.selectedPlaylistId,
                 onNavigateToEpg = { navController.navigate(Screen.Epg.route) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
-                onNavigateToAddPlaylist = { navController.navigate(Screen.AddPlaylist.route) },
+                onNavigateToAddPlaylist = {
+                    AddPlaylistScreen.initialArgs = null
+                    navController.navigate(Screen.AddPlaylist.route)
+                },
                 onNavigateToFavorites = { navController.navigate(Screen.Favorites.route) },
                 onPlaylistSelected = { playlistViewModel.selectPlaylist(it) },
                 onPlaylistRemoved = { playlistViewModel.removePlaylist(it) },
@@ -57,7 +77,9 @@ fun AppNavigation() {
             )
         }
         composable(Screen.Epg.route) {
+            val playlistState by playlistViewModel.uiState.collectAsState()
             EpgScreen(
+                selectedPlaylistId = playlistState.selectedPlaylistId,
                 playerViewModel = playerViewModel,
                 onNavigateToFullscreen = {
                     navController.navigate(Screen.FullscreenPlayer.route)
@@ -110,12 +132,14 @@ fun AppNavigation() {
         }
         composable(Screen.AddPlaylist.route) {
             AddPlaylistScreen(
+                initialArgs = AddPlaylistScreen.initialArgs,
                 onAddM3uUrl = { name, url ->
                     playlistViewModel.addPlaylist(
                         name = name,
                         type = com.iptvplayer.domain.model.PlaylistType.M3U_URL,
                         url = url,
                     )
+                    AddPlaylistScreen.initialArgs = null
                     navController.popBackStack()
                 },
                 onAddXtream = { name, server, user, pass ->
@@ -126,9 +150,13 @@ fun AppNavigation() {
                         username = user,
                         password = pass,
                     )
+                    AddPlaylistScreen.initialArgs = null
                     navController.popBackStack()
                 },
-                onBack = { navController.popBackStack() },
+                onBack = {
+                    AddPlaylistScreen.initialArgs = null
+                    navController.popBackStack()
+                },
             )
         }
         composable(Screen.Favorites.route) {

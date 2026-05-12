@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,11 +32,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iptvplayer.presentation.theme.AppColors
 
 private val shimmerColors = listOf(
-    Color(0xFF2A2A3E),
-    Color(0xFF3A3A50),
-    Color(0xFF2A2A3E),
+    AppColors.ShimmerBase,
+    AppColors.ShimmerHighlight,
+    AppColors.ShimmerBase,
 )
 
 /**
@@ -67,7 +69,8 @@ fun ShimmerPlaceholder(
                     colors = shimmerColors,
                     start = Offset(translateAnim, 0f),
                     end = Offset(translateAnim + width, 0f),
-                )
+                ),
+                shape = RoundedCornerShape(6.dp),
             )
             .onGloballyPositioned { width = it.size.width.toFloat() },
     )
@@ -128,10 +131,10 @@ fun LoadingState(
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator(color = Color.White)
+            CircularProgressIndicator(color = AppColors.Primary)
             Text(
                 text = label,
-                color = Color.White.copy(alpha = 0.7f),
+                color = AppColors.TextSecondary,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(top = 8.dp),
             )
@@ -152,8 +155,8 @@ fun ErrorState(
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "\u26A0 $message",
-                color = Color(0xFFFF6B6B),
+                text = " $message",
+                color = AppColors.Error,
                 fontSize = 14.sp,
             )
             androidx.tv.material3.Button(

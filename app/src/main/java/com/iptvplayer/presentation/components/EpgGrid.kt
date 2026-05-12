@@ -33,15 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.iptvplayer.domain.model.Channel
 import com.iptvplayer.domain.model.EpgProgramme
+import com.iptvplayer.presentation.theme.AppColors
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-/**
- * Full EPG grid: time header + scrollable channel rows with programme cells.
- * Synced horizontal scroll between header and rows.
- */
 @Composable
 fun EpgGrid(
     channels: List<Channel>,
@@ -61,8 +58,13 @@ fun EpgGrid(
     if (isLoading && channels.isEmpty()) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator(color = Color.White)
-                Text("Loading EPG...", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp, modifier = Modifier.padding(top = 8.dp))
+                CircularProgressIndicator(color = AppColors.Primary)
+                Text(
+                    "Loading EPG...",
+                    color = AppColors.TextSecondary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
         return
@@ -71,12 +73,12 @@ fun EpgGrid(
     if (error != null && channels.isEmpty()) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("⚠ $error", color = Color(0xFFFF6B6B), fontSize = 14.sp)
+                Text("⚠ $error", color = AppColors.Error, fontSize = 14.sp)
                 androidx.tv.material3.Button(
                     onClick = onRefresh,
                     modifier = Modifier.padding(top = 12.dp)
                 ) {
-                    Text("Retry")
+                    Text("Retry", color = AppColors.TextPrimary)
                 }
             }
         }
@@ -85,13 +87,12 @@ fun EpgGrid(
 
     if (channels.isEmpty()) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No channels loaded", color = Color.White.copy(alpha = 0.5f), fontSize = 16.sp)
+            Text("No channels loaded", color = AppColors.TextSecondary, fontSize = 16.sp)
         }
         return
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        // Group selector
+    Column(modifier = modifier.fillMaxSize().background(AppColors.EpgBackground)) {
         if (groups.isNotEmpty()) {
             GroupSelector(
                 groups = groups,
@@ -128,7 +129,6 @@ private fun EpgGridContent(
 
     val horizontalScrollState = rememberScrollState()
 
-    // Scroll to current time on first composition
     val density = LocalDensity.current
     val channelNamePx = remember(channelNameWidth, density) {
         with(density) { channelNameWidth.toPx() }
@@ -145,7 +145,6 @@ private fun EpgGridContent(
     }
 
     Column {
-        // Time header
         TimeHeader(
             startTime = startTime,
             endTime = endTime,
@@ -153,10 +152,9 @@ private fun EpgGridContent(
             channelNameWidth = channelNameWidth,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF1A1A2E))
+                .background(AppColors.EpgHeader)
         )
 
-        // Channel rows
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -177,9 +175,6 @@ private fun EpgGridContent(
     }
 }
 
-/**
- * Group selector pills.
- */
 @Composable
 private fun GroupSelector(
     groups: List<String>,
@@ -197,15 +192,16 @@ private fun GroupSelector(
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .background(
-                        if (isSelected) Color(0xFF1E3A5F) else Color(0xFF1A1A2E)
+                        color = if (isSelected) AppColors.EpgGroupSelected else AppColors.EpgGroupUnselected,
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
                     )
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .padding(horizontal = 14.dp, vertical = 8.dp)
                     .clickable { onGroupSelected(group) },
             ) {
                 Text(
                     text = group,
                     fontSize = 13.sp,
-                    color = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
+                    color = if (isSelected) AppColors.Primary else AppColors.TextSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
