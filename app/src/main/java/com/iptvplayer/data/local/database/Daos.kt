@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.iptvplayer.data.local.entities.ChannelEntity
+import com.iptvplayer.data.local.entities.EpgChannelEntity
+import com.iptvplayer.data.local.entities.FavoriteChannelEntity
 import com.iptvplayer.data.local.entities.EpgProgrammeEntity
 import com.iptvplayer.data.local.entities.PlaylistEntity
 import kotlinx.coroutines.flow.Flow
@@ -54,4 +56,31 @@ interface EpgProgrammeDao {
 
     @Query("DELETE FROM epg_programmes WHERE startAt < :beforeEpoch")
     suspend fun deleteStale(beforeEpoch: Long)
+}
+
+@Dao
+interface EpgChannelDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(channels: List<EpgChannelEntity>)
+
+    @Query("SELECT * FROM epg_channels WHERE channelId = :channelId")
+    suspend fun getByChannelId(channelId: String): EpgChannelEntity?
+
+    @Query("SELECT * FROM epg_channels")
+    fun getAll(): Flow<List<EpgChannelEntity>>
+}
+
+@Dao
+interface FavoriteDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(favorite: FavoriteChannelEntity)
+
+    @Query("DELETE FROM favorites WHERE channelId = :channelId")
+    suspend fun delete(channelId: String)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE channelId = :channelId)")
+    fun isFavorite(channelId: String): Flow<Boolean>
+
+    @Query("SELECT channelId FROM favorites ORDER BY addedAt DESC")
+    fun getFavorites(): Flow<List<String>>
 }

@@ -97,6 +97,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
 
+    // Coil (image loading)
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // WorkManager (background EPG refresh)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.13.11")

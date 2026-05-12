@@ -12,7 +12,9 @@ val appModule = module {
     single { provideDatabase(androidContext()) }
     single { get<AppDatabase>().playlistDao() }
     single { get<AppDatabase>().channelDao() }
+    single { get<AppDatabase>().epgChannelDao() }
     single { get<AppDatabase>().epgProgrammeDao() }
+    single { get<AppDatabase>().favoriteDao() }
     single { DispatcherProvider(io = Dispatchers.IO, default = Dispatchers.Default, main = Dispatchers.Main) }
 }
 
